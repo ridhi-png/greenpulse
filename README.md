@@ -1,108 +1,110 @@
-<div align="center">
+# GreenPulse – Real-Time Environmental Intelligence Platform
 
-<!-- Neon Terminal Header -->
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=800&size=34&duration=2200&pause=650&color=22C55E&center=true&vCenter=true&width=980&lines=%F0%9F%8C%8D+GreenPulse+%E2%80%94+Real-Time+Environmental+Intelligence;%E2%9A%A1+Pathway+Streaming+%7C+Anomaly+Detection+%7C+Stress+Scoring;%F0%9F%9F%A2+Hack+the+Planet+%7C+Monitor+the+Air+%7C+Protect+the+Future" alt="Typing SVG" />
-
-<br/>
-
-<!-- Hacker-style badges -->
-<p align="center">
-  <a href="https://greenpulse-eckc9yfkxytdf4ugfahkye.streamlit.app/" target="_blank">
-    <img src="https://img.shields.io/badge/LIVE%20DEMO-Streamlit-0ea5e9?style=for-the-badge&logo=streamlit&logoColor=white" />
-  </a>
-  <img src="https://img.shields.io/badge/ENGINE-Pathway-22c55e?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/LANG-Python-111827?style=for-the-badge&logo=python&logoColor=22c55e" />
-  <img src="https://img.shields.io/badge/STATUS-Streaming%20Online-22c55e?style=for-the-badge" />
-</p>
-
-<!-- Animated neon divider -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=22c55e&height=2&section=header" width="92%"/>
-
-</div>
-
-<div align="center">
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│  GreenPulse: AI-powered real-time environmental monitoring    │
-│  → live anomaly detection + predictive stress scoring         │
-└──────────────────────────────────────────────────────────────┘
-```
-
-</div>
-
----
+Built for **Hack For Green Bharat Hackathon** • Real-time streaming intelligence for environmental monitoring using **Pathway** + **Streamlit**.
 
 ## 🚀 Problem
-Environmental conditions change rapidly, but most monitoring systems rely on **static dashboards** or **delayed batch processing**.
-
-We need:
-- **Real-time ingestion**
-- **Continuous processing**
-- **Intelligent alerting**
-- **Automatic recomputation**
-
----
+Environmental conditions (air quality, heat, humidity, waste accumulation) change rapidly. Many monitoring systems still rely on delayed batch updates or static dashboards—making it hard to detect spikes early and respond in time.
 
 ## 🧠 Solution
-**GreenPulse** uses the **Pathway streaming framework** to:
-- Simulate **live environmental sensor streams**
-- Process data **continuously**
-- Compute an **Environmental Stress Score**
-- Detect anomalies (**AQI spikes / temperature spikes**)
-- Trigger **real-time alerts**
-- Update the dashboard **automatically**
+GreenPulse is an **AI-assisted, real-time environmental monitoring platform** that:
+- **Simulates live sensor streams** (AQI, temperature, humidity, waste index)
+- Uses **Pathway streaming** to process events continuously
+- Computes a continuously updated **Environmental Stress Score** (weighted metrics)
+- **Detects anomalies** and triggers alerts when **AQI** or **temperature** crosses thresholds
+- **Automatically recomputes** outputs as new data arrives
+- Presents insights on a **live Streamlit dashboard**
 
----
+## 🏗️ Architecture
+GreenPulse is designed as a streaming pipeline: ingest → compute → detect → visualize.
 
-## 🏗 Architecture
-
-```mermaid
-flowchart TD
-  A[Sensor Stream\n(Simulated)] --> B[Pathway Streaming Engine]
-  B --> C[Live Computation\nStress Score + Alerts]
-  C --> D[Streamlit\nReal-Time Dashboard]
+```text
++-------------------------------+
+|  Simulated Sensor Stream      |
+|  (AQI, Temp, Humidity, Waste) |
++---------------+---------------+
+                |
+                v
++-------------------------------+
+|   Pathway Streaming Engine    |
+|  - Continuous ingestion       |
+|  - Stress score computation   |
+|  - Anomaly detection          |
++---------------+---------------+
+                |
+                v
++-------------------------------+
+|     Streamlit Live Dashboard  |
+|  - Real-time charts & KPIs    |
+|  - Alerts / threshold flags   |
++-------------------------------+
 ```
 
----
+## ✨ Key Features
+- **Real-time streaming ingestion** (simulated sensor feed)
+- **Continuous computation** with automatic recomputation
+- **Environmental Stress Score** using weighted metrics
+- **Anomaly detection & alerts** for AQI/temperature spikes
+- **Live dashboard visualization** in Streamlit
+- **Cloud deployment** via Streamlit Cloud
 
-## 🔥 Key Features
-- **Real-time streaming ingestion**
-- **Automatic recomputation**
-- **AI-based stress scoring**
-- **Anomaly detection**
-- **Live dashboard updates**
-- **Cloud deployment**
+## 🧰 Technology Stack
+- **Pathway** — real-time stream processing and recomputation
+- **Streamlit** — interactive live dashboard
+- **Python** — core implementation
+- **Pandas** — data shaping/feature prep
 
----
+## ⚙️ Installation & Local Setup
 
-## 🛠 Tech Stack
-- **Pathway** (real-time processing)
-- **Streamlit** (visualization)
-- **Python**
-- **Pandas**
+### 1) Clone the repository
+```bash
+git clone https://github.com/ridhi-png/greenpulse.git
+cd greenpulse
+```
 
----
+### 2) Create and activate a virtual environment
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS / Linux
+source .venv/bin/activate
+```
 
-## ▶ How To Run Locally
-
+### 3) Install dependencies
 ```bash
 pip install -r requirements.txt
+```
+
+### 4) Run the Streamlit app
+```bash
 streamlit run app.py
 ```
 
+## ☁️ Deployment
+GreenPulse is deployed on **Streamlit Cloud**.
+
+Live demo: https://greenpulse-eckc9yfkxytdf4ugfahkye.streamlit.app/
+
+To deploy your own version:
+1. Push this repo to GitHub
+2. Connect it in Streamlit Cloud
+3. Set the entrypoint to `app.py`
+4. Ensure `requirements.txt` is present and up to date
+
+## 🌍 Real-World Impact & Scalability
+- **Early warning system** for hazardous AQI and heat events
+- Can support **schools, smart cities, industrial zones, and municipal bodies**
+- Streaming-first design supports **continuous data** from distributed IoT sensors
+- Pathway enables scalable incremental recomputation as data volume grows
+
+## 🔮 Future Enhancements
+- Integrate **real IoT feeds** (MQTT/Kafka/HTTP)
+- Add **geospatial views** and multi-location aggregation
+- Personalize thresholds by location, time-of-day, and season
+- Add **predictive forecasting** for stress score trends
+- Notifications via **SMS/WhatsApp/email**
+
 ---
 
-## 🌐 Live Demo
-https://greenpulse-eckc9yfkxytdf4ugfahkye.streamlit.app/
-
----
-
-<div align="center">
-
-<!-- Footer wave -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=22c55e&height=120&section=footer" width="100%"/>
-
-<b>GreenPulse</b> — Track • Analyze • Act
-
-</div>
+### 📌 Hackathon Note
+Built for **Hack For Green Bharat Hackathon** with a focus on real-time environmental intelligence and actionable alerts.
