@@ -1,83 +1,107 @@
+from streamlit_autorefresh import st_autorefresh
 import streamlit as st
 import pandas as pd
+import pathway as pw
 import random
 import time
 from datetime import datetime
+import os
 
-st.set_page_config(page_title="GreenPulse - Environmental Risk Monitor", layout="wide")
+st.set_page_config(layout="wide")
+st.title("🌍 GreenPulse - Real-Time Environmental Intelligence")
 
-st.title("🌍 GreenPulse – Real-Time Environmental Risk Dashboard")
-st.markdown("AI-powered real-time environmental stress monitoring system.")
+# ---------------------------
+# Create sensor file if not exists
+# ---------------------------
 
-# Create session state storage
-if "data" not in st.session_state:
-    st.session_state.data = pd.DataFrame(columns=[
-        "timestamp", "aqi", "temperature", "waste_index", "risk_score", "risk_level"
-    ])
+if not os.path.exists("sensor_stream.csv"):
+    with open("sensor_stream.csv", "w") as f:
+        f.write("timestamp,aqi,temperature,humidity,waste_index\n")
 
-def generate_data():
-    aqi = random.randint(50, 300)
-    temperature = random.randint(20, 45)
-    waste_index = random.randint(10, 100)
+# ---------------------------
+# Append one new sensor reading
+# ---------------------------
 
-    risk_score = (
-        0.5 * (aqi / 300)
-        + 0.3 * (waste_index / 100)
-        + 0.2 * (temperature / 45)
+with open("sensor_stream.csv", "a") as f:
+    f.write(
+        f"{datetime.now()},"
+        f"{random.randint(50,250)},"
+        f"{random.uniform(20,45)},"
+        f"{random.uniform(30,80)},"
+        f"{random.uniform(10,90)}\n"
     )
 
-    if risk_score > 0.7:
-        risk_level = "High"
-    elif risk_score > 0.4:
-        risk_level = "Moderate"
-    else:
-        risk_level = "Low"
+# ---------------------------
+# Define Pathway Schema
+# ---------------------------
 
-    return {
-        "timestamp": datetime.now(),
-        "aqi": aqi,
-        "temperature": temperature,
-        "waste_index": waste_index,
-        "risk_score": round(risk_score, 2),
-        "risk_level": risk_level,
-    }
+class EnvSchema(pw.Schema):
+    timestamp: str
+    aqi: int
+    temperature: float
+    humidity: float
+    waste_index: float
 
-# Generate new row every refresh
-new_row = generate_data()
-st.session_state.data = pd.concat(
-    [st.session_state.data, pd.DataFrame([new_row])],
-    ignore_index=True
+# ---------------------------
+# Read streaming file
+# ---------------------------
+
+input_table = pw.io.csv.read(
+    "sensor_stream.csv",
+    schema=EnvSchema,
+    mode="static"  # static per rerun (stable)
 )
 
-# Keep only last 50 rows
-st.session_state.data = st.session_state.data.tail(50)
+processed = input_table.select(
+    pw.this.timestamp,
+    pw.this.aqi,
+    pw.this.temperature,
+    pw.this.humidity,
+    pw.this.waste_index,
+    stress_score=(
+        0.4 * pw.this.aqi +
+        0.3 * pw.this.temperature +
+        0.2 * pw.this.waste_index +
+        0.1 * pw.this.humidity
+    ),
+    alert=(
+        (pw.this.aqi > 180) |
+        (pw.this.temperature > 40)
+    )
+)
 
-df = st.session_state.data
+pw.io.csv.write(processed, "live_output.csv")
 
-# Metrics
-col1, col2, col3 = st.columns(3)
+pw.run()
 
-col1.metric("Latest AQI", df.iloc[-1]["aqi"])
-col2.metric("Temperature (°C)", df.iloc[-1]["temperature"])
-col3.metric("Waste Index", df.iloc[-1]["waste_index"])
+# ---------------------------
+# Auto refresh every 3 sec
+# ---------------------------
 
-st.subheader("Environmental Risk Trend")
-st.line_chart(df.set_index("timestamp")["risk_score"])
+st_autorefresh(interval=3000, key="refresh")
 
-st.subheader("Current Risk Level")
+# ---------------------------
+# Display results
+# ---------------------------
 
-risk = df.iloc[-1]["risk_level"]
+if os.path.exists("live_output.csv"):
+    df = pd.read_csv("live_output.csv")
+    latest = df.iloc[-1]
 
-if risk == "High":
-    st.error("🚨 HIGH RISK – Immediate intervention required")
-elif risk == "Moderate":
-    st.warning("⚠ MODERATE RISK – Monitor closely")
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    col1.metric("AQI", latest["aqi"])
+    col2.metric("Temperature", round(latest["temperature"], 2))
+    col3.metric("Humidity", round(latest["humidity"], 2))
+    col4.metric("Waste Index", round(latest["waste_index"], 2))
+    col5.metric("Stress Score", round(latest["stress_score"], 2))
+
+    if latest["alert"]:
+        st.error("⚠ Environmental Alert Triggered!")
+    else:
+        st.success("Environment Stable")
+
+    st.line_chart(df["stress_score"])
 else:
-    st.success("✅ LOW RISK – Stable environmental conditions")
+    st.warning("Initializing live data...")
 
-st.subheader("Recent Data")
-st.dataframe(df.tail(10), use_container_width=True)
-
-# Auto-refresh
-time.sleep(2)
-st.rerun()
